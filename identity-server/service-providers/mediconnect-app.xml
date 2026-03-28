@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ServiceProvider>
+  <ApplicationName>MediConnect</ApplicationName>
+  <Description>MediConnect Smart Clinic API Gateway OAuth2 Application</Description>
+
+  <InboundAuthenticationConfig>
+    <InboundAuthenticationRequestConfig>
+      <InboundAuthType>oauth2</InboundAuthType>
+      <Properties>
+        <Property>
+          <Name>grantType</Name>
+          <Value>authorization_code password refresh_token</Value>
+        </Property>
+        <Property>
+          <Name>callbackUrl</Name>
+          <Value>https://oauth.pstmn.io/v1/callback,http://localhost:3000/callback</Value>
+        </Property>
+        <Property>
+          <Name>tokenType</Name>
+          <Value>JWT</Value>
+        </Property>
+      </Properties>
+    </InboundAuthenticationRequestConfig>
+  </InboundAuthenticationConfig>
+
+  <LocalAndOutBoundAuthenticationConfig>
+    <AuthenticationSteps>
+      <AuthenticationStep>
+        <LocalAuthenticatorConfigs>
+          <LocalAuthenticatorConfig>
+            <Name>BasicAuthenticator</Name>
+          </LocalAuthenticatorConfig>
+        </LocalAuthenticatorConfigs>
+      </AuthenticationStep>
+    </AuthenticationSteps>
+  </LocalAndOutBoundAuthenticationConfig>
+
+</ServiceProvider>

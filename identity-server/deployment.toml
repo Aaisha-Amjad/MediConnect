@@ -1,0 +1,41 @@
+[server]
+hostname = "localhost"
+node_ip = "127.0.0.1"
+
+[super_admin]
+username = "admin"
+password = "admin"
+create_admin_account = true
+
+[user_store]
+type = "database_unique_id"
+
+[database.identity_db]
+type = "h2"
+url = "jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE"
+username = "wso2carbon"
+password = "wso2carbon"
+
+[oauth]
+allowed_scopes = [
+    "appointment:read",
+    "appointment:write",
+    "prescription:read",
+    "prescription:write",
+    "prescription:fill"
+]
+
+[oauth.token]
+expiry_time = "300"
+
+[cors]
+allow_generic_http_requests = true
+allow_any_origin = false
+allowed_origins = [
+    "https://localhost:9443",
+    "https://localhost:9444",
+    "http://localhost:3000"
+]
+allow_subdomains = false
+supported_methods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+supports_credentials = true
