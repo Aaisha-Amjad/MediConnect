@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<UserList>
+
+  <User>
+    <Username>doctor1</Username>
+    <Password>Doctor@123!</Password>
+    <Role>Doctor</Role>
+    <Claims>
+      <Claim uri="http://wso2.org/claims/givenname">John</Claim>
+      <Claim uri="http://wso2.org/claims/lastname">Smith</Claim>
+      <Claim uri="http://wso2.org/claims/emailaddress">doctor1@mediconnect.com</Claim>
+    </Claims>
+  </User>
+
+  <User>
+    <Username>patient1</Username>
+    <Password>Patient@123!</Password>
+    <Role>Patient</Role>
+    <Claims>
+      <Claim uri="http://wso2.org/claims/givenname">Alice</Claim>
+      <Claim uri="http://wso2.org/claims/lastname">Johnson</Claim>
+      <Claim uri="http://wso2.org/claims/emailaddress">patient1@mediconnect.com</Claim>
+    </Claims>
+  </User>
+
+  <User>
+    <Username>pharma1</Username>
+    <Password>Pharma@123!</Password>
+    <Role>Pharmacist</Role>
+    <Claims>
+      <Claim uri="http://wso2.org/claims/givenname">Bob</Claim>
+      <Claim uri="http://wso2.org/claims/lastname">Williams</Claim>
+      <Claim uri="http://wso2.org/claims/emailaddress">pharma1@mediconnect.com</Claim>
+    </Claims>
+  </User>
+
+</UserList>
