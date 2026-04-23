@@ -1,0 +1,64 @@
+openapi: 3.0.0
+info:
+  title: PrescriptionAPI
+  version: 1.0.0
+  description: Prescription management and audit API
+servers:
+  - url: http://ballerina:8080
+paths:
+  /api/v1/prescriptions:
+    post:
+      summary: Submit prescription
+      operationId: submitPrescription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                patientId:
+                  type: string
+                medication:
+                  type: string
+                dosage:
+                  type: string
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/prescriptions/{id}:
+    get:
+      summary: Get prescription
+      operationId: getPrescription
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/audit/{traceId}:
+    get:
+      summary: Get audit trail
+      operationId: getAuditTrail
+      parameters:
+        - name: traceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object

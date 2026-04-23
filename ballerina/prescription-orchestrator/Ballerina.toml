@@ -1,0 +1,7 @@
+[package]
+org = "mediconnect"
+name = "prescription_orchestrator"
+version = "0.1.0"
+
+[build-options]
+cloud = "docker"

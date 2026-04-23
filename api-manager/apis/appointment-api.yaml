@@ -1,0 +1,63 @@
+openapi: 3.0.0
+info:
+  title: AppointmentAPI
+  version: 1.0.0
+  description: Clinic appointment management API
+servers:
+  - url: http://clinic-service:5001
+paths:
+  /appointments:
+    get:
+      summary: List appointments
+      operationId: listAppointments
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      summary: Book appointment
+      operationId: bookAppointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                patientId:
+                  type: string
+                date:
+                  type: string
+                reason:
+                  type: string
+      responses:
+        '201':
+          description: Created
+  /appointments/{id}:
+    get:
+      summary: Get appointment
+      operationId: getAppointment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Cancel appointment
+      operationId: cancelAppointment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK

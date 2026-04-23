@@ -1,0 +1,466 @@
+{
+  "info": {
+    "_postman_id": "mediconnect-api-tests",
+    "name": "MediConnect",
+    "description": "Complete workflow for MediConnect smart clinic API gateway",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Doctor Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('doctorToken', jsonData.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password"
+                },
+                {
+                  "key": "username",
+                  "value": "doctor1"
+                },
+                {
+                  "key": "password",
+                  "value": "Doctor@123!"
+                },
+                {
+                  "key": "scope",
+                  "value": "prescription:write appointment:write"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{clientId}}"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{clientSecret}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseIsUrl}}/oauth2/token",
+              "host": ["{{baseIsUrl}}"],
+              "path": ["oauth2", "token"]
+            }
+          }
+        },
+        {
+          "name": "Patient Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('patientToken', jsonData.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password"
+                },
+                {
+                  "key": "username",
+                  "value": "patient1"
+                },
+                {
+                  "key": "password",
+                  "value": "Patient@123!"
+                },
+                {
+                  "key": "scope",
+                  "value": "prescription:read appointment:read"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{clientId}}"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{clientSecret}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseIsUrl}}/oauth2/token",
+              "host": ["{{baseIsUrl}}"],
+              "path": ["oauth2", "token"]
+            }
+          }
+        },
+        {
+          "name": "Pharmacist Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('pharmaToken', jsonData.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password"
+                },
+                {
+                  "key": "username",
+                  "value": "pharma1"
+                },
+                {
+                  "key": "password",
+                  "value": "Pharma@123!"
+                },
+                {
+                  "key": "scope",
+                  "value": "prescription:read prescription:fill"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{clientId}}"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{clientSecret}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseIsUrl}}/oauth2/token",
+              "host": ["{{baseIsUrl}}"],
+              "path": ["oauth2", "token"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Happy Path Workflow",
+      "item": [
+        {
+          "name": "1. Book Appointment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{doctorToken}}"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"patientId\": \"P001\", \"date\": \"2025-02-01\", \"reason\": \"Checkup\"}"
+            },
+            "url": {
+              "raw": "{{baseApimUrl}}/appointment/v1/appointments",
+              "host": ["{{baseApimUrl}}"],
+              "path": ["appointment", "v1", "appointments"]
+            }
+          }
+        },
+        {
+          "name": "2. Submit Prescription",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('traceId', jsonData.traceId);",
+                  "    pm.environment.set('prescriptionId', jsonData.prescriptionId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{doctorToken}}"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "doctor1"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"patientId\": \"P001\", \"medication\": \"Amoxicillin 500mg\", \"dosage\": \"3x daily for 7 days\", \"notes\": \"Take with food\"}"
+            },
+            "url": {
+              "raw": "{{baseApimUrl}}/prescription/v1/prescriptions",
+              "host": ["{{baseApimUrl}}"],
+              "path": ["prescription", "v1", "prescriptions"]
+            }
+          }
+        },
+        {
+          "name": "3. Get Audit Trail",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{doctorToken}}"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseApimUrl}}/prescription/v1/audit/{{traceId}}",
+              "host": ["{{baseApimUrl}}"],
+              "path": ["prescription", "v1", "audit", "{{traceId}}"]
+            }
+          }
+        },
+        {
+          "name": "4. Pharmacist Fills Prescription",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{pharmaToken}}"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseApimUrl}}/pharmacy/v1/prescriptions/{{prescriptionId}}/fill",
+              "host": ["{{baseApimUrl}}"],
+              "path": ["pharmacy", "v1", "prescriptions", "{{prescriptionId}}", "fill"]
+            }
+          }
+        },
+        {
+          "name": "5. Patient Checks Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patientToken}}"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseApimUrl}}/prescription/v1/prescriptions/{{prescriptionId}}",
+              "host": ["{{baseApimUrl}}"],
+              "path": ["prescription", "v1", "prescriptions", "{{prescriptionId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Security & Throttle Tests",
+      "item": [
+        {
+          "name": "Patient tries to submit prescription (403)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patientToken}}"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "patient1"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"patientId\": \"P001\", \"medication\": \"Aspirin\", \"dosage\": \"1x daily\", \"notes\": \"As needed\"}"
+            },
+            "url": {
+              "raw": "{{baseApimUrl}}/prescription/v1/prescriptions",
+              "host": ["{{baseApimUrl}}"],
+              "path": ["prescription", "v1", "prescriptions"]
+            }
+          }
+        },
+        {
+          "name": "No token (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"patientId\": \"P001\", \"medication\": \"Aspirin\", \"dosage\": \"1x daily\", \"notes\": \"As needed\"}"
+            },
+            "url": {
+              "raw": "{{baseApimUrl}}/prescription/v1/prescriptions",
+              "host": ["{{baseApimUrl}}"],
+              "path": ["prescription", "v1", "prescriptions"]
+            }
+          }
+        },
+        {
+          "name": "Rate limit test (429)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patientToken}}"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseApimUrl}}/prescription/v1/prescriptions/TEST",
+              "host": ["{{baseApimUrl}}"],
+              "path": ["prescription", "v1", "prescriptions", "TEST"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseIsUrl",
+      "value": "https://localhost:9443"
+    },
+    {
+      "key": "baseApimUrl",
+      "value": "https://localhost:8243"
+    },
+    {
+      "key": "clientId",
+      "value": ""
+    },
+    {
+      "key": "clientSecret",
+      "value": ""
+    },
+    {
+      "key": "doctorToken",
+      "value": ""
+    },
+    {
+      "key": "patientToken",
+      "value": ""
+    },
+    {
+      "key": "pharmaToken",
+      "value": ""
+    },
+    {
+      "key": "traceId",
+      "value": ""
+    },
+    {
+      "key": "prescriptionId",
+      "value": ""
+    }
+  ]
+}
