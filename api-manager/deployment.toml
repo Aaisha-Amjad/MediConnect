@@ -30,8 +30,3 @@ type = "JKS"
 password = "wso2carbon"
 alias = "wso2carbon"
 key_password = "wso2carbon"
-
-[apim.key_manager]
-service_url = "https://wso2is:9443/services/"
-username = "admin"
-password = "admin"
