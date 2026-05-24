@@ -5,7 +5,7 @@ services:
     image: wso2/wso2is:7.0.0
     container_name: wso2is
     ports:
-      - "9443:9443"
+      - "9445:9443"
     volumes:
       - wso2is-db:/home/wso2carbon/wso2is-7.0.0/repository/database
       - ./security/wso2carbon.jks:/home/wso2carbon/wso2is-7.0.0/repository/resources/security/wso2carbon.jks
@@ -24,7 +24,7 @@ services:
     image: wso2/wso2am:4.3.0
     container_name: wso2apim
     ports:
-      - "9444:9443"
+      - "9443:9443"
       - "8243:8243"
       - "8280:8280"
     volumes:
