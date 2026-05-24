@@ -1,0 +1,57 @@
+openapi: 3.0.0
+info:
+  title: AppointmentAPI
+  version: 1.0.0
+  description: Manages clinic appointments for MediConnect
+paths:
+  /appointments:
+    get:
+      summary: List all appointments
+      operationId: listAppointments
+      responses:
+        "200":
+          description: OK
+    post:
+      summary: Book an appointment
+      operationId: bookAppointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                patientId:
+                  type: string
+                date:
+                  type: string
+                reason:
+                  type: string
+      responses:
+        "201":
+          description: Created
+  /appointments/{id}:
+    get:
+      summary: Get appointment by ID
+      operationId: getAppointment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+    delete:
+      summary: Cancel appointment
+      operationId: cancelAppointment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK

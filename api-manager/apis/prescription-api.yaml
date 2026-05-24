@@ -1,0 +1,54 @@
+openapi: 3.0.0
+info:
+  title: PrescriptionAPI
+  version: 1.0.0
+  description: Manages prescriptions and triggers Ballerina workflow
+paths:
+  /prescriptions:
+    post:
+      summary: Submit a prescription
+      operationId: submitPrescription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                patientId:
+                  type: string
+                medication:
+                  type: string
+                dosage:
+                  type: string
+                notes:
+                  type: string
+      responses:
+        "200":
+          description: Workflow completed
+  /prescriptions/{id}:
+    get:
+      summary: Get prescription status
+      operationId: getPrescription
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+  /audit/{traceId}:
+    get:
+      summary: Get audit trail by traceId
+      operationId: getAuditTrail
+      parameters:
+        - name: traceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
