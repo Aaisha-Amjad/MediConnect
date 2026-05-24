@@ -1,0 +1,93 @@
+version: "3.8"
+
+services:
+  wso2is:
+    image: wso2/wso2is:7.0.0
+    container_name: wso2is
+    ports:
+      - "9443:9443"
+    volumes:
+      - wso2is-db:/home/wso2carbon/wso2is-7.0.0/repository/database
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -k -f https://localhost:9443/carbon/admin/login.jsp || exit 1",
+        ]
+      interval: 30s
+      timeout: 15s
+      retries: 15
+      start_period: 120s
+
+  wso2apim:
+    image: wso2/wso2am:4.3.0
+    container_name: wso2apim
+    ports:
+      - "9444:9443"
+      - "8243:8243"
+      - "8280:8280"
+    volumes:
+      - ./api-manager/deployment.toml:/home/wso2carbon/wso2am-4.3.0/repository/conf/deployment.toml
+    depends_on:
+      wso2is:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -k -f https://localhost:9443/carbon/admin/login.jsp || exit 1",
+        ]
+      interval: 30s
+      timeout: 15s
+      retries: 15
+      start_period: 180s
+
+  ballerina:
+    build: ./ballerina
+    container_name: ballerina-orchestrator
+    ports:
+      - "8080:8080"
+    environment:
+      - CLINIC_URL=http://clinic-service:5001
+      - INSURANCE_URL=http://insurance-service:5002
+      - PHARMACY_URL=http://pharmacy-service:5003
+    depends_on:
+      - clinic-service
+      - insurance-service
+      - pharmacy-service
+
+  clinic-service:
+    build: ./mock-services/clinic-service
+    container_name: clinic-service
+    ports:
+      - "5001:5001"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5001/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  insurance-service:
+    build: ./mock-services/insurance-service
+    container_name: insurance-service
+    ports:
+      - "5002:5002"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5002/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pharmacy-service:
+    build: ./mock-services/pharmacy-service
+    container_name: pharmacy-service
+    ports:
+      - "5003:5003"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5003/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  wso2is-db:
