@@ -30,9 +30,6 @@ services:
     volumes:
       - ./api-manager/deployment.toml:/home/wso2carbon/wso2am-4.3.0/repository/conf/deployment.toml
       - wso2apim-db:/home/wso2carbon/wso2am-4.3.0/repository/database
-    depends_on:
-      wso2is:
-        condition: service_healthy
     healthcheck:
       test:
         [
