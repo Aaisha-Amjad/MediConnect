@@ -3,41 +3,37 @@ import ballerina/log;
 
 service /api/v1 on new http:Listener(8080) {
 
-    resource function post prescriptions(http:Caller caller, http:Request req) returns error? {
+    resource function post prescriptions(http:Request req) returns WorkflowResult|http:BadRequest|http:InternalServerError {
         json|error body = req.getJsonPayload();
         if body is error {
-            check caller->respond(<http:Response> {statusCode: 400});
-            return;
+            return <http:BadRequest>{body: {message: "Invalid JSON body"}};
         }
 
         PrescriptionRequest|error prescReq = body.cloneWithType(PrescriptionRequest);
         if prescReq is error {
-            check caller->respond(<http:Response> {statusCode: 400});
-            return;
+            return <http:BadRequest>{body: {message: "Required fields: patientId, medication, dosage"}};
         }
 
-        string actorId = req.getHeader("X-Actor-Id") ?: "UNKNOWN";
-        WorkflowResult|error result = runPrescriptionWorkflow(prescReq, actorId);
+        string|error actorHeader = req.getHeader("X-Actor-Id");
+        string actorId = actorHeader is string ? actorHeader : "UNKNOWN";
 
+        WorkflowResult|error result = runPrescriptionWorkflow(prescReq, actorId);
         if result is error {
             log:printError("Workflow failed", 'error = result);
-            check caller->respond(<http:Response> {statusCode: 500});
-            return;
+            return <http:InternalServerError>{body: {message: result.message()}};
         }
-
-        check caller->respond(result.toJson());
+        return result;
     }
 
-    resource function get audit/[string traceId](http:Caller caller) returns error? {
+    resource function get audit/[string traceId]() returns AuditEntry[]|http:NotFound {
         AuditEntry[] entries = getAuditByTraceId(traceId);
         if entries.length() == 0 {
-            check caller->respond(<http:Response> {statusCode: 404});
-            return;
+            return <http:NotFound>{body: {message: "No audit records found for: " + traceId}};
         }
-        check caller->respond(entries.toJson());
+        return entries;
     }
 
-    resource function get health(http:Caller caller) returns error? {
-        check caller->respond({status: "healthy", service: "ballerina-orchestrator", version: "1.0.0"});
+    resource function get health() returns json {
+        return {status: "healthy", service: "ballerina-orchestrator", version: "1.0.0"};
     }
 }
