@@ -3,41 +3,41 @@ import ballerina/log;
 
 service /api/v1 on new http:Listener(8080) {
 
-    resource function post prescriptions(
-        http:Request req,
-        @http:Header {name: "X-Actor-Id"} string? xActorId
-    ) returns WorkflowResult|http:BadRequest|http:InternalServerError {
-
+    resource function post prescriptions(http:Caller caller, http:Request req) returns error? {
         json|error body = req.getJsonPayload();
         if body is error {
-            return <http:BadRequest>{body: {message: "Invalid JSON body"}};
+            check caller->respond(<http:Response> {statusCode: 400});
+            return;
         }
 
         PrescriptionRequest|error prescReq = body.cloneWithType(PrescriptionRequest);
         if prescReq is error {
-            return <http:BadRequest>{body: {message: "Required fields: patientId, medication, dosage"}};
+            check caller->respond(<http:Response> {statusCode: 400});
+            return;
         }
 
-        string actorId = xActorId ?: "UNKNOWN";
+        string actorId = req.getHeader("X-Actor-Id") ?: "UNKNOWN";
         WorkflowResult|error result = runPrescriptionWorkflow(prescReq, actorId);
 
         if result is error {
             log:printError("Workflow failed", 'error = result);
-            return <http:InternalServerError>{body: {message: result.message()}};
+            check caller->respond(<http:Response> {statusCode: 500});
+            return;
         }
 
-        return result;
+        check caller->respond(result.toJson());
     }
 
-    resource function get audit/[string traceId]() returns AuditEntry[]|http:NotFound {
+    resource function get audit/[string traceId](http:Caller caller) returns error? {
         AuditEntry[] entries = getAuditByTraceId(traceId);
         if entries.length() == 0 {
-            return <http:NotFound>{body: {message: "No audit records found for: " + traceId}};
+            check caller->respond(<http:Response> {statusCode: 404});
+            return;
         }
-        return entries;
+        check caller->respond(entries.toJson());
     }
 
-    resource function get health() returns json {
-        return {status: "healthy", service: "ballerina-orchestrator", version: "1.0.0"};
+    resource function get health(http:Caller caller) returns error? {
+        check caller->respond({status: "healthy", service: "ballerina-orchestrator", version: "1.0.0"});
     }
 }
