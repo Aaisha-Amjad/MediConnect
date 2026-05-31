@@ -3,8 +3,8 @@ import ballerina/log;
 import ballerina/time;
 import ballerina/uuid;
 
-configurable string insuranceUrl = "http://localhost:5002";
-configurable string pharmacyUrl = "http://localhost:5003";
+configurable string insuranceUrl = "http://insurance-service:5002";
+configurable string pharmacyUrl = "http://pharmacy-service:5003";
 
 final http:Client insuranceClient = check new (insuranceUrl);
 final http:Client pharmacyClient = check new (pharmacyUrl);
