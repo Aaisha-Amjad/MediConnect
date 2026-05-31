@@ -1,7 +1,23 @@
-[package]
-org = "mediconnect"
-name = "prescription_orchestrator"
-version = "1.0.0"
+public type PrescriptionRequest record {|
+    string patientId;
+    string medication;
+    string dosage;
+    string? notes;
+|};
 
-[build-options]
-observabilityIncluded = true
+public type WorkflowResult record {|
+    string prescriptionId;
+    string traceId;
+    string workflowStatus;
+    map<json> steps;
+|};
+
+public type AuditEntry record {|
+    string traceId;
+    string prescriptionId;
+    string actorId;
+    string action;
+    string status;
+    string timestamp;
+    map<json> metadata;
+|};
