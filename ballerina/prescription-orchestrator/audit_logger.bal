@@ -1,11 +1,11 @@
 import ballerina/io;
-import ballerina/time;
 
 isolated AuditEntry[] auditLog = [];
 
 public isolated function writeAuditLog(AuditEntry entry) returns error? {
+    AuditEntry & readonly readonlyEntry = entry.cloneReadOnly();
     lock {
-        auditLog.push(entry);
+        auditLog.push(readonlyEntry);
     }
     string logLine = entry.toJsonString() + "\n";
     check io:fileWriteString("/tmp/mediconnect-audit.jsonl", logLine, io:APPEND);

@@ -34,6 +34,6 @@ service /api/v1 on new http:Listener(8080) {
     }
 
     resource function get health() returns json {
-        return {status: "healthy", service: "ballerina-orchestrator", version: "1.0.0"};
+        return {status: "healthy", "service": "ballerina-orchestrator", version: "1.0.0"};
     }
 }
